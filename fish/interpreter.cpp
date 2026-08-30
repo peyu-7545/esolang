@@ -169,8 +169,6 @@ struct FishRuntime {
 
 		char instr = getInstruction(ip.i, ip.j);
 
-		cerr << "命令: " << instr << " -> ";
-
 		bool isRunning = true;
 
 		if (stringMode != ' ') {
@@ -185,18 +183,6 @@ struct FishRuntime {
 			// 命令を実行
 			isRunning = doInstruction(instr);
 		}
-
-		for (int i = 0; i < stacks.back().data.size(); i++) {
-			int op;
-			if (stacks.back().isReversed) {
-				op = stacks.back().data[stacks.back().data.size() - 1 - i];
-			} else {
-				op = stacks.back().data[i];
-			}
-			cerr << op << " ";
-		}
-
-		cerr << endl;
 
 		ip.advancePointer(width, height);
 
@@ -370,19 +356,36 @@ struct FishRuntime {
 	}
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+
+	if (argc < 2) {
+		cerr << ".fishファイルを指定してください" << endl;
+		return 1;
+	}
+
+	ifstream ifs(argv[1]);
+
+	if (!ifs) {
+		cerr << "ファイルを開けませんでした" << endl;
+		return 1;
+	}
+
 	string code, str;
 
-	while (getline(cin, str)) {
+	while (getline(ifs, str)) {
 		code += str + "\n";
 	}
 
-	stringstream ist("1145140/10=");
-	stringstream ost;
+	// 入力
+	stringstream ist(3 < argc ? argv[2] : "");
 
-	FishRuntime fish(code, {}, ist, ost);
+	// initialStack
+	vector<double> initialStack;
+	for (int i = 3; i < argc; i++) {
+		initialStack.push_back(stod(argv[i]));
+	}
+
+	FishRuntime fish(code, initialStack, ist);
 
 	fish.run();
-
-	cout << ost.str() << endl;
 }
