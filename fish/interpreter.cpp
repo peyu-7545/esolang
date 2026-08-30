@@ -149,10 +149,6 @@ struct FishRuntime {
 				if (j > maxWidth) maxWidth = j;
 				i++;
 				j = 0;
-			} else if (c == ' ') {
-				// 空白の文字コードを0として扱うためNULL文字に置き換える
-				codeBox[{i, j}] = '\0';
-				j++;
 			} else {
 				codeBox[{i, j}] = c;
 				j++;
@@ -275,14 +271,14 @@ struct FishRuntime {
 				case '&': stacks.back().swapTopAndRegister(); break; // registerが空ならtopからregisterに、そうでないならregisterからtopに移す
 
 				// codeBox
-				case 'g': y = stacks.back().pop(), x = stacks.back().pop(); stacks.back().push(getInstruction(y, x)); break; // 
+				case 'g': y = stacks.back().pop(), x = stacks.back().pop(); stacks.back().push(instructionToNum(getInstruction(y, x))); break; // 
 				case 'p': y = stacks.back().pop(), x = stacks.back().pop(); setInstruction(y, x, stacks.back().pop()); break; //
 
 				// halt
 				case ';': return false; // プログラムを終了
 				
 				// nop
-				case '\0': break; // 何もしない
+				case ' ': break; // 何もしない
 
 				default: throw runtime_error("無効な命令が呼び出された"); // 無効な命令
 			}
@@ -357,7 +353,7 @@ struct FishRuntime {
 	// 座標(i, j)にある命令を取得する
 	char getInstruction(int i, int j) const {
 		auto it = codeBox.find({i, j});
-		return it == codeBox.end() ? '\0' : it->second;
+		return it == codeBox.end() ? ' ' : it->second;
 	}
 
 	// 指定した座標の命令を書き換える
@@ -367,6 +363,10 @@ struct FishRuntime {
 		// 箱のサイズを変更
 		if (i > height) height = i;
 		if (j > width) width = j;
+	}
+
+	double instructionToNum(char instr) {
+		return instr == ' ' ? 0 : instr;
 	}
 };
 
@@ -378,8 +378,11 @@ int main() {
 	}
 
 	stringstream ist("1145140/10=");
+	stringstream ost;
 
-	FishRuntime fish(code, {}, ist);
+	FishRuntime fish(code, {}, ist, ost);
 
 	fish.run();
+
+	cout << ost.str() << endl;
 }
