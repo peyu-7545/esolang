@@ -169,6 +169,8 @@ struct FishRuntime {
 
 		char instr = getInstruction(ip.i, ip.j);
 
+		// cerr << instr << ": ";
+
 		bool isRunning = true;
 
 		if (stringMode != ' ') {
@@ -183,6 +185,11 @@ struct FishRuntime {
 			// 命令を実行
 			isRunning = doInstruction(instr);
 		}
+
+		// for (int x : stacks.back().data) {
+		// 	cerr << x << " ";
+		// }
+		// cerr << endl;
 
 		ip.advancePointer(width, height);
 
@@ -377,7 +384,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// 入力
-	stringstream ist(3 < argc ? argv[2] : "");
+	stringstream ist(2 <  argc ? argv[2] : "");
 
 	// initialStack
 	vector<double> initialStack;
